@@ -1,0 +1,218 @@
+import type { UploadFile } from './upload-file.ts';
+import type { Queue } from './queue.ts';
+import type FileQueueService from './services/file-queue.ts';
+import type DataTransferWrapper from './system/data-transfer-wrapper.ts';
+export interface FileQueueSignature {
+    Args: {
+        Positional: never[];
+        Named: {
+            name?: string;
+            onFileAdded?: (file: UploadFile) => void;
+            onFileRemoved?: (file: UploadFile) => void;
+            onUploadStarted?: (file: UploadFile) => void;
+            onUploadSucceeded?: (file: UploadFile, response: Response) => void;
+            onUploadFailed?: (file: UploadFile, response: Response) => void;
+        };
+    };
+    Return: Queue;
+}
+export interface SelectFileSignature {
+    Element: HTMLInputElement;
+    Args: {
+        Positional: [];
+        Named: {
+            filter?: (file: File, files: File[], index: number) => boolean;
+            onFilesSelected?: (files: UploadFile[]) => void;
+        };
+    };
+}
+declare module '@ember/service' {
+    interface Registry {
+        'file-queue': FileQueueService;
+    }
+}
+export interface QueueListener {
+    onFileAdded?(file: UploadFile): void;
+    onFileRemoved?(file: UploadFile): void;
+    onUploadStarted?(file: UploadFile): void;
+    onUploadSucceeded?(file: UploadFile, response: Response): void;
+    onUploadFailed?(file: UploadFile, response: Response): void;
+}
+export type QueueName = string | symbol;
+/**
+ * Possible file states.
+ *
+ * @remarks
+ *
+ * Here is the statechart describing the flow of state:
+ *
+ * ```
+ *       .------.     .---------.     .--------.
+ *   o--| queued |-->| uploading |-->| uploaded |
+ *       `------`     `---------`     `--------`
+ *          ^              |    .-------.
+ *          |              |`->| aborted |
+ *          |              |    `-------`
+ *          |  .------.    |    .---------.
+ *          `-| failed |<-` `->| timed_out |-.
+ *          |  `------`         `---------`  |
+ *          `-------------------------------`
+ * ```
+ */
+export declare enum FileState {
+    Queued = "queued",
+    Uploading = "uploading",
+    TimedOut = "timed_out",
+    Aborted = "aborted",
+    Uploaded = "uploaded",
+    Failed = "failed"
+}
+export declare enum FileSource {
+    /**
+     * the file is created using the native file picker
+     */
+    Browse = "browse",
+    /**
+     * the file was created using drag and drop from their desktop
+     */
+    DragAndDrop = "drag-and-drop",
+    /**
+     * the file was created by dragging the file from another webpage
+     */
+    Web = "web",
+    /**
+     * the file is created from a data URL using the `fromDataURL`
+     * method for files. This usually means that the file was created
+     * manually by the developer on behalf of the user
+     */
+    DataUrl = "data-url",
+    /**
+     * the file is created from a blob using the `fromBlob`
+     * method for files. This usually means that the file was created
+     * manually by the developer
+     */
+    Blob = "blob"
+}
+export interface FileDropzoneSignature {
+    Element: HTMLElement;
+    Args: {
+        queue?: Queue;
+        /**
+         * Whether users can upload content from websites by dragging images from
+         * another webpage and dropping it into your app. The default is `false`
+         * to prevent cross-site scripting issues.
+         *
+         * @defaulValue false
+         * */
+        allowUploadsFromWebsites?: boolean;
+        /**
+         * Whether users can drop folders into the dropzone.
+         *
+         * When enabled, dropped directories are traversed recursively and all
+         * contained files are added to the queue. Each resulting `UploadFile`
+         * exposes its location within the dropped directory via `relativePath`.
+         *
+         * Hidden files (e.g. `.DS_Store`) are not filtered out — use `filter`
+         * if your application needs to exclude them.
+         *
+         * @defaultValue false
+         * */
+        allowFolderDrop?: boolean;
+        /**
+         * This is the type of cursor that should
+         * be shown when a drag event happens.
+         *
+         * Corresponds to `DataTransfer.dropEffect`.
+         * (https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer/dropEffect)
+         *
+         * @defaultValue 'copy'
+         */
+        cursor?: 'link' | 'none' | 'copy' | 'move';
+        /**
+         * Whether to add multiple files to the queue at once.
+         *
+         * If set to false only one file will be added when dropping mulitple files.
+         *
+         * @defaultValue true
+         */
+        multiple?: boolean;
+        filter?: (file: File, files: File[], index: number) => boolean;
+        /**
+         * Called when files have entered the dropzone.
+         */
+        onDragEnter?: (files: File[], dataTransfer: DataTransferWrapper) => void;
+        /**
+         * Called when files have left the dropzone.
+         */
+        onDragLeave?: (files: File[], dataTransfer: DataTransferWrapper) => void;
+        /**
+         * Called when file have been dropped on the dropzone.
+         */
+        onDrop?: (files: UploadFile[], dataTransfer: DataTransferWrapper) => void;
+    };
+    Blocks: {
+        default: [dropzone: {
+            supported: boolean;
+            active: boolean;
+        }, queue: Queue];
+    };
+}
+export interface FileUploadDragEvent extends DragEvent {
+    dataTransfer: DataTransfer;
+    source?: 'os' | 'web';
+    itemDetails?: DataTransferItem[] | {
+        kind: string;
+        type: string;
+    }[];
+}
+export interface UploadOptions {
+    url?: string;
+    method?: string;
+    accepts?: string[];
+    headers?: Record<string, string>;
+    fileKey?: string;
+    contentType?: string;
+    data?: Record<string, string | File>;
+    withCredentials?: boolean;
+    timeout?: number;
+}
+export interface HTTPRequestOptions {
+    label?: string;
+    withCredentials?: boolean;
+    timeout?: number;
+}
+export interface HTTPRequestResponse {
+    status: number;
+    body: string | Document | HTMLElement[] | null | undefined;
+    headers: Record<string, string>;
+}
+export interface DragListenerModifierSignature {
+    Args: {
+        Named: DragListenerHandlers;
+    };
+}
+type DragListenerHandler = (event: FileUploadDragEvent) => void;
+export interface DragListenerHandlers {
+    dragenter?: DragListenerHandler;
+    dragleave?: DragListenerHandler;
+    dragover?: DragListenerHandler;
+    drop?: DragListenerHandler;
+}
+export interface DragEventListener {
+    element: Element;
+    handlers: DragListenerHandlers;
+}
+export interface QueuedDragEvent {
+    eventName: 'dragenter' | 'dragleave' | 'dragover' | 'drop';
+    listener: DragEventListener;
+    event: FileUploadDragEvent;
+}
+export interface SyntheticDragEvent {
+    source: FileUploadDragEvent['source'];
+    dataTransfer: DataTransfer | null;
+    itemDetails: Array<{
+        kind: string;
+        type: string;
+    }>;
+}
+export {};
