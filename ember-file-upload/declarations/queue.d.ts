@@ -105,7 +105,7 @@ export declare class Queue {
         Element: HTMLInputElement;
         Args: {
             Named: {
-                filter?: (file: File, files: File[], index: number) => boolean;
+                filter?: (file: File, files: File[], index: number, relativePath: string) => boolean;
                 onFilesSelected?: (files: UploadFile[]) => void;
             };
             Positional: [];

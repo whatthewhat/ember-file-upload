@@ -6,7 +6,7 @@ import { D as DataTransferWrapper } from '../data-transfer-wrapper-BH84pIdJ.js';
 import { waitForPromise } from '@ember/test-waiters';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import { D as DEFAULT_QUEUE, U as UploadFile } from '../file-queue-CL7yCykP.js';
+import { D as DEFAULT_QUEUE, U as UploadFile } from '../file-queue-ss35Q-nz.js';
 import Modifier from 'ember-modifier';
 import { assert } from '@ember/debug';
 import { registerDestructor } from '@ember/destroyable';
@@ -462,7 +462,7 @@ let FileDropzoneComponent = (_class = class FileDropzoneComponent extends Compon
     }] of files.entries()) {
       if (file instanceof File) {
         const uploadFile = new UploadFile(file, FileSource.DragAndDrop, relativePath);
-        if (this.args.filter && !this.args.filter(file, rawFiles, index)) {
+        if (this.args.filter && !this.args.filter(file, rawFiles, index, relativePath)) {
           continue;
         }
         this.queue.add(uploadFile);

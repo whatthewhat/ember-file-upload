@@ -2,7 +2,7 @@ import { _ as _applyDecoratedDescriptor, b as _initializerDefineProperty } from 
 import Helper from '@ember/component/helper';
 import { registerDestructor } from '@ember/destroyable';
 import * as s from '@ember/service';
-import { D as DEFAULT_QUEUE } from '../file-queue-CL7yCykP.js';
+import { D as DEFAULT_QUEUE } from '../file-queue-ss35Q-nz.js';
 
 var _class, _descriptor;
 const service = s.service ?? s.inject;

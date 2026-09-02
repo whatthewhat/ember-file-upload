@@ -433,7 +433,10 @@ let Queue = (_class = (_listeners = /*#__PURE__*/new WeakMap(), _name = /*#__PUR
         const files = Array.from(fileList);
         const selectedFiles = [];
         for (const file of files) {
-          if (filter && !filter?.(file, files, files.indexOf(file))) {
+          // Populated by the browser for inputs with the `webkitdirectory`
+          // attribute, empty otherwise
+          const relativePath = file.webkitRelativePath ?? '';
+          if (filter && !filter(file, files, files.indexOf(file), relativePath)) {
             continue;
           }
           let uploadFile;
@@ -677,4 +680,4 @@ class FileQueueService extends s__default {
 }
 
 export { DEFAULT_QUEUE as D, FileQueueService as F, Queue as Q, UploadFile as U };
-//# sourceMappingURL=file-queue-CL7yCykP.js.map
+//# sourceMappingURL=file-queue-ss35Q-nz.js.map
