@@ -19,6 +19,8 @@ export declare class UploadFile {
      * with the `webkitdirectory` attribute (via `File.webkitRelativePath`).
      *
      * Empty string when the file was not added as part of a directory.
+     * An explicitly supplied path (including an empty one) always takes
+     * precedence over `File.webkitRelativePath`.
      */
     get relativePath(): string;
     /**

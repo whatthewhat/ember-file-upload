@@ -94,9 +94,11 @@ let UploadFile = (_class$1 = (_source = /*#__PURE__*/new WeakMap(), _relativePat
    * with the `webkitdirectory` attribute (via `File.webkitRelativePath`).
    *
    * Empty string when the file was not added as part of a directory.
+   * An explicitly supplied path (including an empty one) always takes
+   * precedence over `File.webkitRelativePath`.
    */
   get relativePath() {
-    return _classPrivateFieldGet2(_relativePath, this) || this.file.webkitRelativePath || '';
+    return _classPrivateFieldGet2(_relativePath, this) ?? this.file.webkitRelativePath ?? '';
   }
 
   /**
@@ -680,4 +682,4 @@ class FileQueueService extends s__default {
 }
 
 export { DEFAULT_QUEUE as D, FileQueueService as F, Queue as Q, UploadFile as U };
-//# sourceMappingURL=file-queue-ss35Q-nz.js.map
+//# sourceMappingURL=file-queue-Cebcdh92.js.map

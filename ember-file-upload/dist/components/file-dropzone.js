@@ -6,7 +6,7 @@ import { D as DataTransferWrapper } from '../data-transfer-wrapper-BH84pIdJ.js';
 import { waitForPromise } from '@ember/test-waiters';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import { D as DEFAULT_QUEUE, U as UploadFile } from '../file-queue-ss35Q-nz.js';
+import { D as DEFAULT_QUEUE, U as UploadFile } from '../file-queue-Cebcdh92.js';
 import Modifier from 'ember-modifier';
 import { assert } from '@ember/debug';
 import { registerDestructor } from '@ember/destroyable';
@@ -436,7 +436,9 @@ let FileDropzoneComponent = (_class = class FileDropzoneComponent extends Compon
         // Never leave the dropzone in a stuck `active` state
         console.error('ember-file-upload: error reading dropped files', error);
       } finally {
-        if (!this.isDestroyed) {
+        // A later drag may have replaced the wrapper while the folder read
+        // was pending — only reset state that still belongs to this drop
+        if (!this.isDestroyed && this.dataTransferWrapper === dataTransferWrapper) {
           this.active = false;
           this.dataTransferWrapper = undefined;
         }
